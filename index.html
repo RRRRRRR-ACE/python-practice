@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能系统运维 - Python代码练习</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,"Microsoft YaHei",sans-serif; background:#f5f6fa; color:#2d3436; display:flex; height:100vh; overflow:hidden; }
+.sidebar { width:280px; background:#2d3436; color:#fff; padding:20px 0; overflow-y:auto; flex-shrink:0; }
+.sidebar h2 { padding:0 20px 15px; font-size:16px; border-bottom:1px solid #636e72; margin-bottom:10px; }
+.nb-item { padding:12px 20px; cursor:pointer; transition:background .2s; border-left:3px solid transparent; }
+.nb-item:hover { background:#636e72; }
+.nb-item.active { background:#0984e3; border-left-color:#74b9ff; }
+.nb-item .nb-id { font-size:12px; opacity:.7; }
+.nb-item .nb-title { font-size:14px; margin-top:2px; }
+.main { flex:1; overflow-y:auto; padding:30px; }
+.nb-header { margin-bottom:20px; }
+.nb-header h1 { font-size:24px; color:#2d3436; }
+.nb-header p { color:#636e72; margin-top:5px; }
+.toolbar { margin:15px 0; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.toolbar button { padding:8px 18px; border:none; border-radius:6px; cursor:pointer; font-size:14px; }
+.btn-check { background:#00b894; color:#fff; }
+.btn-check:hover { background:#00a381; }
+.btn-reveal { background:#fdcb6e; color:#2d3436; }
+.btn-reset { background:#dfe6e9; color:#2d3436; }
+.score-box { font-size:18px; font-weight:700; margin-left:15px; }
+.cell { background:#fff; border-radius:8px; margin-bottom:15px; box-shadow:0 1px 3px rgba(0,0,0,.1); overflow:hidden; }
+.cell-label { background:#dfe6e9; padding:6px 15px; font-size:12px; color:#636e72; font-family:monospace; }
+pre.code { padding:15px; font-family:"Consolas","Monaco",monospace; font-size:14px; line-height:1.8; white-space:pre-wrap; word-break:break-all; }
+.blank { display:inline-block; min-width:120px; padding:2px 8px; border:2px solid #74b9ff; border-radius:4px; background:#e3f2fd; font-family:inherit; font-size:inherit; outline:none; color:#0984e3; font-weight:600; }
+.blank:focus { border-color:#0984e3; }
+.blank.correct { background:#c6f6d5; border-color:#00b894; color:#00695c; }
+.blank.wrong { background:#fed7d7; border-color:#e17055; color:#c0392b; }
+.blank.revealed { background:#fefcbf; border-color:#f6e05e; color:#975a16; }
+.ans-hint { display:none; font-size:12px; color:#e17055; margin-left:8px; font-weight:normal; }
+.ans-hint.show { display:inline; }
+.cell-result { padding:8px 15px; font-size:13px; display:none; }
+.cell-result.show { display:block; }
+.pass { background:#c6f6d5; color:#00695c; }
+.fail { background:#fed7d7; color:#c0392b; }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <h2>练习章节</h2>
+  <div id="nbList"></div>
+</div>
+<div class="main">
+  <div class="nb-header">
+    <h1 id="nbTitle"></h1>
+    <p id="nbDesc"></p>
+  </div>
+  <div class="toolbar">
+    <button class="btn-check" onclick="checkAll()">检查答案</button>
+    <button class="btn-reveal" onclick="revealAll()">显示答案</button>
+    <button class="btn-reset" onclick="resetAll()">重置</button>
+    <span class="score-box" id="scoreBox"></span>
+  </div>
+  <div id="cellsArea"></div>
+</div>
+<script>
+const NBS = [{"id": "3.1.1", "title": "超市销售数据分析", "desc": "使用pandas读取超市销售数据，统计大类销售情况并绘制柱状图", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n# 加载数据集\ndata = pd._____(\"A超市的销售数据.csv\")\n\n# 打印数据集的前几行\n(data._____)", "answers": ["read_csv", "head()"]}, {"code": "# 统计大类名称个数\nunique_categories_count = data[\"大类名称\"]._____\nprint(f\"大类名称个数: {unique_categories_count}\")", "answers": ["nunique()"]}, {"code": "# 计算不同大类名称下的总销售金额\ncategory_sales_sum = data._____\n\n# 按照总销售金额从大到小排序\nsorted_category_sales = category_sales_sum._____(ascending=_____)\nprint(sorted_category_sales)", "answers": ["groupby(\"大类名称\")[\"销售金额\"].sum()", "sort_values", "False"]}, {"code": "max_sales_category = sorted_category_sales._____\n\n# 筛选出该大类下的数据\nsub_data = data[data[\"大类名称\"] == max_sales_category]\n\n# 计算该大类下各小类的销售总金额\nsub_category_sales_sum = sub_data._____\n\n# 选择销售总金额最大的前15个小类\ntop_15_sub_categories = sub_category_sales_sum._____\n\n# 绘制柱状图\nplt.figure(figsize=(12, 6))\ntop_15_sub_categories._____(kind=\"_____\")\nplt.title(f\"{max_sales_category} 下销售总金额最大的前15个小类分布\")\nplt.xlabel(\"小类名称\")\nplt.ylabel(\"销售金额\")\nplt.xticks(rotation=45)\nplt.show()", "answers": ["idxmax()", "groupby(\"小类名称\")[\"销售金额\"].sum()", "sort_values(ascending=False).head(15)", "plot", "bar"]}]}, {"id": "3.1.2", "title": "天气数据压力差分析", "desc": "分析2009年每月平均压力差，绘制压力最大月份的日趋势折线图", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\n# 1. 加载数据集并输出头部信息\ndata = pd._____(\"A地区的天气数据.csv\")\nprint(data._____)", "answers": ["read_csv", "head()"]}, {"code": "# 2. 计算2009年1-11月份的每月的平均压力差，并按照平均压力差从大到小排序\ndata['日期'] = pd._____(data['日期'])\n\ndata_2009 = data[_____ == 2009]\n\nmonthly_pressure_diff = data_2009._____.sort_values(ascending=_____)\nprint(monthly_pressure_diff)", "answers": ["to_datetime", "data['日期'].dt.year", "groupby('月份')['压力差'].mean()", "False"]}, {"code": "max_pressure_diff_month = monthly_pressure_diff._____\n\ndata_month = data_2009[data_2009['月份'] == _____]\ndata_month = data_month._____(by='日期')\n\nplt.figure(figsize=(12, 6))\nplt.plot(_____, _____, marker='o', linestyle='-', linewidth=2)\nplt.scatter(_____, _____)\nplt.xlabel('日期')\nplt.ylabel('压力差')\nplt.title(f'{max_pressure_diff_month}月份每天的压力差')\nplt.grid(True)\nplt._____", "answers": ["idxmax()", "max_pressure_diff_month", "sort_values", "data_month['日期']", "data_month['压力差']", "data_month['日期']", "data_month['压力差']", "show()"]}]}, {"id": "3.1.3", "title": "上海餐饮数据分析", "desc": "分析上海各行政区餐饮评分，找出综合评分最高区域的人均消费类别", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\n# 1. 加载数据集并输出\"行政区\"为\"浦东新区\"的数据头部信息\ndata = pd._____(\"上海餐饮数据.csv\")\npudong_data = data[data['行政区'] == '浦东新区']\nprint(pudong_data._____)", "answers": ["read_csv", "head()"]}, {"code": "# 2. 计算每个行政区的平均口味环境服务评分，并按综合评分从高到低排序\ndata = data[_____]  # 不包含未知行政区\ndata['综合评分'] = data[_____]._____(axis=1)\navg_scores_by_district = data._____.sort_values(by='综合评分', ascending=_____)\nprint(avg_scores_by_district)", "answers": ["data['行政区'] != '未知'", "['口味','环境','服务']", "mean", "groupby('行政区')[['口味','环境','服务','综合评分']].mean()", "False"]}, {"code": "# 3. 选择综合评分最高的行政区，以人均消费最高的前15个类别并以条形图展示\nhighest_score_district = avg_scores_by_district._____\nhighest_score_district_data = data[data['行政区'] == _____]\navg_consumption_by_category = highest_score_district_data._____.sort_values(ascending=False)\ntop_15_categories = avg_consumption_by_category._____\n\nplt.figure(figsize=(12, 6))\ntop_15_categories.plot(kind='bar')\nplt.xlabel('类别')\nplt.ylabel('人均消费平均值')\nplt.title(f'{highest_score_district}人均消费最高的前15个类别')\nplt.xticks(rotation=45)\nplt.show()", "answers": ["idxmax()", "highest_score_district", "groupby('类别')['人均消费'].mean()", "head(15)"]}]}, {"id": "3.1.4", "title": "房屋挂牌数据分析", "desc": "分析上海各地区房屋单价，找出均价最高区域的装修风格价格分布", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\n# 1. 加载数据集并输出地区为黄埔的数据头部信息\ndata = pd._____(\"各地区房屋挂牌数据.csv\")\nhuangpu_data = data[_____]\nprint(huangpu_data._____)", "answers": ["read_csv", "data['地区'] == '黄埔'", "head()"]}, {"code": "# 2. 计算城市为上海的每个地区的平均单价，并按照从高到低排序\nshanghai_data = data[_____]\navg_price_per_area = shanghai_data._____.sort_values(ascending=_____)\nprint(avg_price_per_area)", "answers": ["data['城市'] == '上海'", "groupby('地区')['单价(每平方米)'].mean()", "False"]}, {"code": "# 3. 计算上海所有地区中单价平均值最高的地区\nhighest_avg_price_area = avg_price_per_area._____\nhighest_avg_price_area_data = shanghai_data[_____ == highest_avg_price_area]\navg_price_by_style = highest_avg_price_area_data._____\n\nplt.figure(figsize=(10, 6))\navg_price_by_style._____.plot(kind=\"_____\")\nplt.xlabel(\"装修风格\")\nplt.ylabel(\"平均单价(每平方米)\")\nplt.title(f\"{highest_avg_price_area}地区不同装修风格的平均单价分布\")\nplt._____", "answers": ["idxmax()", "shanghai_data['地区']", "groupby('装修风格')['单价(每平方米)'].mean()", "sort_values(ascending=False)", "bar", "show()"]}]}, {"id": "3.1.5", "title": "电影票销售分析", "desc": "分析各电影院平均售票情况，找出营收最高影院的开场时间分布", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\n# 加载数据集\ndata = pd._____(\"电影票销售数据集.csv\")\n# 筛选电影代码为33的数据\nmovie_33_data = data[_____]\n\n# 输出头部信息\nprint(movie_33_data._____)", "answers": ["read_csv", "data['电影代码'] == '33'", "head()"]}, {"code": "# 按照电影院代码分组，计算平均总售票金额和平均售票数\navg_data = data._____\n\n# 按照平均总售票金额从高到低排序\nsorted_avg_data = avg_data.sort_values(by=\"_____\", ascending=_____)\n\n# 输出前15条记录\nprint(sorted_avg_data._____)", "answers": ["groupby('电影院代码')[['总售票金额','售票数']].mean()", "总售票金额", "False", "head(15)"]}, {"code": "# 计算总售票金额最高的电影院代码\nmax_revenue_cinema_code = sorted_avg_data._____\n\n# 筛选出该电影院的数据\nmax_revenue_cinema_data = data[_____ == max_revenue_cinema_code]\n\n# 按照开场时间分组，计算总售票金额\nopening_time_revenue = max_revenue_cinema_data._____\nprint(opening_time_revenue)\n\n# 绘制柱状图\nplt.figure(figsize=(12, 6))\nplt.bar(opening_time_revenue._____, opening_time_revenue._____)\nplt.xlabel(\"开场时间\")\nplt.ylabel(\"总售票金额\")\nplt.title(f\"{max_revenue_cinema_code}电影院不同开场时间的总售票金额分布\")\nplt.xticks(rotation=45)\nplt.show()", "answers": ["idxmax()", "data['电影院代码']", "groupby('开场时间')['总售票金额'].sum()", "index", "values"]}]}, {"id": "3.2.1", "title": "超市家居类销售趋势", "desc": "分析家居类商品月度销售及2015年1月日销售趋势", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n# 加载数据集\ndata = pd._____(\"A超市的销售数据.csv\")\n\n# 筛选大类为家居的数据\nhome_data = data[_____]\n\n# 计算每个月的总销售金额\nmonthly_sales_sum = home_data._____\nprint(monthly_sales_sum)", "answers": ["read_csv", "data['大类名称'] == '家居'", "groupby('销售月份')['销售金额'].sum()"]}, {"code": "# 筛选大类为家居且销售月份为201501的数据\nhome_data_201501 = data[(_____) & (_____)]\n\n# 计算每天的销售金额\ndaily_sales_sum = home_data_201501._____\nprint(daily_sales_sum)\n\n# 绘制折线图\nfig, ax = plt.subplots(figsize=(12, 6))\nax.plot(_____, _____, marker=\"o\")\nplt.xticks(rotation=45)\nplt.title(\"2015年1月家居类商品日销售趋势\")\nplt.xlabel(\"销售日期\")\nplt.ylabel(\"销售金额\")\nplt.grid(True)\nplt._____", "answers": ["data['大类名称'] == '家居'", "data['销售月份'] == 201501", "groupby('销售日期')['销售金额'].sum()", "daily_sales_sum.index", "daily_sales_sum.values", "show()"]}]}, {"id": "3.2.2", "title": "2010年天气数据分析", "desc": "分析2010年每月平均降水量和最高温度变化趋势", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\n# 1. 加载数据集并打印结果\ndata = pd.read_csv(\"A地区的天气数据.csv\")\nprint(data._____)\n\n# 2. 计算2010年每个月的平均降水量并打印结果\ndata['日期'] = pd._____(data['日期'])\ndata_2010 = data[_____ == 2010]\nmonthly_avg_precipitation = data_2010._____\nprint(monthly_avg_precipitation)", "answers": ["head()", "to_datetime", "data['日期'].dt.year", "groupby('月份')['降水量'].mean()"]}, {"code": "# 3. 生成2010年每月平均最高温度变化的折线图\nmonthly_avg_max_temperature = data_2010._____\nprint(monthly_avg_max_temperature)\nplt.figure(figsize=(12, 6))\nplt.plot(_____, _____)\nplt.xlabel('月份')\nplt.ylabel('平均最高温度')\nplt.title('2010年每月平均最高温度变化')\nplt.grid(True)\nplt._____", "answers": ["groupby('月份')['最高温度'].mean()", "monthly_avg_max_temperature.index", "monthly_avg_max_temperature.values", "show()"]}]}, {"id": "3.2.3", "title": "川菜餐饮服务分析", "desc": "分析各行政区服务评分及川菜在不同行政区的评分差异", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\n# 1. 加载数据集并过滤掉未知行政区\ndata = pd._____(\"上海餐饮数据.csv\")\nfiltered_data = data[_____]\nprint(filtered_data)\n\n# 2. 计算每个行政区的平均服务评分并排序\naverage_scores = filtered_data._____.sort_values(ascending=False)\nprint(average_scores)", "answers": ["read_csv", "data['行政区'] != '未知'", "groupby('行政区')['服务'].mean()"]}, {"code": "# 3. 选择类别为川菜的数据并绘制条形图\nsichuan_cuisine_data = filtered_data[_____ == \"川菜\"]\nsichuan_cuisine_average_scores = sichuan_cuisine_data._____\n\nplt.figure(figsize=(10, 5))\nsichuan_cuisine_average_scores._____(kind=\"_____\")\nplt.xlabel(\"行政区\")\nplt.ylabel(\"平均服务\")\nplt.title(\"川菜在不同行政区的平均服务评分\")\nplt._____", "answers": ["filtered_data['类别']", "groupby('行政区')['服务'].mean()", "plot", "bar", "show()"]}, {"code": "# 4. 分析各个行政区的人均消费数据\naverage_consumption = filtered_data.groupby(\"行政区\")[\"人均消费\"].mean()\nprint(average_consumption)\nhighest_consumption_district = average_consumption._____\nlowest_consumption_district = average_consumption._____\n\nprint(f\"餐饮消费能力最高的行政区：{highest_consumption_district}\")\nprint(f\"餐饮消费能力最低的行政区：{lowest_consumption_district}\")", "answers": ["idxmax()", "idxmin()"]}]}, {"id": "3.2.4", "title": "长沙房价分析", "desc": "分析长沙各地区房价及不同城市3室1厅2卫均价对比", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\n# 1. 加载数据集\ndata = pd._____(\"各地区房屋挂牌数据.csv\")\n\n# 2. 计算城市为长沙的每个地区的平均单价，按从高到低排序\nchangsha_data = data[_____]\navg_price_per_area_changsha = changsha_data._____.sort_values(ascending=_____)\nprint(avg_price_per_area_changsha)", "answers": ["read_csv", "data['城市'] == '长沙'", "groupby('地区')['单价(每平方米)'].mean()", "False"]}, {"code": "# 3. 选择房屋类型为3室1厅2卫的数据，分析不同城市平均单价\nthree_bedroom_data = data[_____]\navg_price_per_city = three_bedroom_data._____\n\nplt.figure(figsize=(10, 6))\navg_price_per_city._____(kind=\"_____\")\nplt.xlabel(\"城市\")\nplt.ylabel(\"平均单价(每平方米)\")\nplt.title(\"不同城市的3室1厅2卫房屋平均单价\")\nplt._____", "answers": ["data['房屋类型'] == '3室1厅2卫'", "groupby('城市')['单价(每平方米)'].mean()", "plot", "bar", "show()"]}, {"code": "# 4. 按城市统计单价平均值，找出均价最高城市及该城市单价最高地区\navg_price_per_city = data._____\nhighest_avg_price_city = avg_price_per_city._____\nhighest_avg_price_city_data = data[data[\"城市\"] == highest_avg_price_city]\nhighest_price_area_in_city = highest_avg_price_city_data._____\n\nprint(f\"房屋平均单价最高的城市是：{highest_avg_price_city}\")\nprint(f\"该城市中房屋单价最高的地区是：{highest_price_area_in_city}\")", "answers": ["groupby('城市')['单价(每平方米)'].mean()", "idxmax()", "set_index('地区')['单价(每平方米)'].idxmax()"]}]}, {"id": "3.2.5", "title": "电影院票价分析", "desc": "分析各影院平均票价及9点开场场次的票房排名", "cells": [{"code": "import pandas as pd\nimport matplotlib.pyplot as plt\n\n# 1. 加载数据集并打印结果\nfile_path = \"电影票销售数据集.csv\"\ndata = pd._____(file_path)\nprint(data._____)\n\n# 2. 计算每家电影院的平均票价，按降序输出前15组\naverage_price = data._____.sort_values(ascending=_____)\nprint(average_price._____)", "answers": ["read_csv", "head()", "groupby('电影院代码')['票价'].mean()", "False", "head(15)"]}, {"code": "# 3. 选择开场时间为9点的数据，分析不同电影院总售票金额并绘制柱状图\ndata_at_9 = data[_____]\ntotal_sales_at_9 = data_at_9._____.sort_values(ascending=_____)\n\nplt.figure(figsize=(10, 5))\ntotal_sales_at_9._____.plot(kind=\"_____\")\nplt.xlabel(\"电影院代码\")\nplt.ylabel(\"总售票金额\")\nplt.title(\"开场时间为9点的电影院总售票金额前15名\")\nplt.xticks(rotation=45)\nplt._____", "answers": ["data['开场时间'] == 9", "groupby('电影院代码')['总售票金额'].sum()", "False", "head(15)", "bar", "show()"]}]}];
+let curNB = 0;
+
+function renderList() {
+  const el = document.getElementById('nbList');
+  el.innerHTML = NBS.map(function(nb,i){
+    return '<div class="nb-item ' + (i===curNB?'active':'') + '" onclick="selectNB(' + i + ')">' +
+      '<div class="nb-id">' + nb.id + '</div>' +
+      '<div class="nb-title">' + nb.title + '</div></div>';
+  }).join('');
+}
+
+function selectNB(i) {
+  curNB = i;
+  renderList();
+  renderNB();
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderNB() {
+  const nb = NBS[curNB];
+  document.getElementById('nbTitle').textContent = nb.id + ' ' + nb.title;
+  document.getElementById('nbDesc').textContent = nb.desc;
+  document.getElementById('scoreBox').textContent = '';
+  const area = document.getElementById('cellsArea');
+  area.innerHTML = '';
+  nb.cells.forEach(function(cell, ci){
+    const parts = cell.code.split('_____');
+    let inner = '';
+    parts.forEach(function(part, pi){
+      inner += escapeHtml(part);
+      if (pi < parts.length - 1) {
+        inner += '<input class="blank" id="b-' + ci + '-' + pi + '" autocomplete="off" spellcheck="false">';
+        inner += '<span class="ans-hint" id="hint-' + ci + '-' + pi + '"></span>';
+      }
+    });
+    area.innerHTML += '<div class="cell"><div class="cell-label">In [' + (ci+1) + ']</div><pre class="code">' + inner + '</pre><div class="cell-result" id="cellres-' + ci + '"></div></div>';
+  });
+}
+
+function normalize(s) {
+  return s.replace(/\s+/g,'').replace(/['\u2018\u2019]/g,"'").replace(/["\u201c\u201d]/g,'"').toLowerCase();
+}
+
+function checkAll() {
+  const nb = NBS[curNB];
+  let total = 0, correct = 0;
+  nb.cells.forEach(function(cell, ci){
+    let cellCorrect = 0;
+    cell.answers.forEach(function(ans, pi){
+      total++;
+      const el = document.getElementById('b-' + ci + '-' + pi);
+      const hint = document.getElementById('hint-' + ci + '-' + pi);
+      const uv = normalize(el.value.trim());
+      const av = normalize(ans.trim());
+      el.classList.remove('correct','wrong','revealed');
+      hint.classList.remove('show');
+      if (uv === av) {
+        el.classList.add('correct');
+        cellCorrect++;
+        correct++;
+      } else {
+        el.classList.add('wrong');
+        hint.textContent = ' 正确: ' + ans;
+        hint.classList.add('show');
+      }
+    });
+    const res = document.getElementById('cellres-' + ci);
+    res.classList.add('show');
+    if (cellCorrect === cell.answers.length) {
+      res.className = 'cell-result show pass';
+      res.textContent = '单元格 ' + (ci+1) + ' 全部正确 (' + cellCorrect + '/' + cell.answers.length + ')';
+    } else {
+      res.className = 'cell-result show fail';
+      res.textContent = '单元格 ' + (ci+1) + ' 正确 ' + cellCorrect + '/' + cell.answers.length;
+    }
+  });
+  document.getElementById('scoreBox').textContent = '得分: ' + correct + '/' + total + ' (' + Math.round(correct/total*100) + '分)';
+}
+
+function revealAll() {
+  const nb = NBS[curNB];
+  nb.cells.forEach(function(cell, ci){
+    cell.answers.forEach(function(ans, pi){
+      const el = document.getElementById('b-' + ci + '-' + pi);
+      el.value = ans;
+      el.classList.remove('correct','wrong');
+      el.classList.add('revealed');
+      const hint = document.getElementById('hint-' + ci + '-' + pi);
+      hint.classList.remove('show');
+    });
+  });
+}
+
+function resetAll() {
+  const nb = NBS[curNB];
+  nb.cells.forEach(function(cell, ci){
+    cell.answers.forEach(function(ans, pi){
+      const el = document.getElementById('b-' + ci + '-' + pi);
+      el.value = '';
+      el.classList.remove('correct','wrong','revealed');
+      const hint = document.getElementById('hint-' + ci + '-' + pi);
+      hint.classList.remove('show');
+    });
+    const res = document.getElementById('cellres-' + ci);
+    res.classList.remove('show');
+  });
+  document.getElementById('scoreBox').textContent = '';
+}
+
+selectNB(0);
+</script>
+</body>
+</html>
