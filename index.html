@@ -207,13 +207,19 @@ function closeAnswer() {
       const el = document.getElementById('b-' + ci + '-' + pi);
       if (el.classList.contains('revealed')) {
         el.value = '';
-        el.classList.remove('revealed');
       }
+      el.classList.remove('revealed', 'correct', 'wrong');
       const hint = document.getElementById('hint-' + ci + '-' + pi);
-      hint.classList.remove('show');
+      if (hint) {
+        hint.classList.remove('show');
+        hint.textContent = '';
+      }
     });
     const res = document.getElementById('cellres-' + ci);
-    res.classList.remove('show');
+    if (res) {
+      res.classList.remove('show');
+      res.className = 'cell-result';
+    }
   });
   document.getElementById('scoreBox').textContent = '';
 }
