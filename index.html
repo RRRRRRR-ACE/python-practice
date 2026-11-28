@@ -24,6 +24,8 @@ body { font-family:-apple-system,"Microsoft YaHei",sans-serif; background:#f5f6f
 .btn-check:hover { background:#00a381; }
 .btn-reveal { background:#fdcb6e; color:#2d3436; }
 .btn-reset { background:#dfe6e9; color:#2d3436; }
+.btn-close { background:#b2bec3; color:#2d3436; }
+.btn-close:hover { background:#9aa5aa; }
 .score-box { font-size:18px; font-weight:700; margin-left:15px; }
 .cell { background:#fff; border-radius:8px; margin-bottom:15px; box-shadow:0 1px 3px rgba(0,0,0,.1); overflow:hidden; }
 .cell-label { background:#dfe6e9; padding:6px 15px; font-size:12px; color:#636e72; font-family:monospace; }
@@ -35,7 +37,7 @@ pre.code { padding:15px; font-family:"Consolas","Monaco",monospace; font-size:14
 .blank.revealed { background:#fefcbf; border-color:#f6e05e; color:#975a16; }
 .ans-hint { display:none; font-size:12px; color:#e17055; margin-left:8px; font-weight:normal; }
 .ans-hint.show { display:inline; }
-.cell-result { padding:8px 15px; font-size:13px; display:none; }
+.cell-result { padding:10px 15px; font-size:13px; display:none; margin:12px 15px 10px; border-radius:6px; }
 .cell-result.show { display:block; }
 .pass { background:#c6f6d5; color:#00695c; }
 .fail { background:#fed7d7; color:#c0392b; }
@@ -94,6 +96,7 @@ pre.code { padding:15px; font-family:"Consolas","Monaco",monospace; font-size:14
   <div class="toolbar">
     <button class="btn-check" onclick="checkAll()">检查答案</button>
     <button class="btn-reveal" onclick="revealAll()">显示答案</button>
+    <button class="btn-close" onclick="closeAnswer()">关闭答案</button>
     <button class="btn-reset" onclick="resetAll()">重置</button>
     <span class="score-box" id="scoreBox"></span>
   </div>
@@ -195,6 +198,24 @@ function revealAll() {
       hint.classList.remove('show');
     });
   });
+}
+
+function closeAnswer() {
+  const nb = NBS[curNB];
+  nb.cells.forEach(function(cell, ci){
+    cell.answers.forEach(function(ans, pi){
+      const el = document.getElementById('b-' + ci + '-' + pi);
+      if (el.classList.contains('revealed')) {
+        el.value = '';
+        el.classList.remove('revealed');
+      }
+      const hint = document.getElementById('hint-' + ci + '-' + pi);
+      hint.classList.remove('show');
+    });
+    const res = document.getElementById('cellres-' + ci);
+    res.classList.remove('show');
+  });
+  document.getElementById('scoreBox').textContent = '';
 }
 
 function resetAll() {
